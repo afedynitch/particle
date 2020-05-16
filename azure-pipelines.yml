@@ -4,23 +4,27 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
 trigger:
-- master
+  tags:
+    include:
+      - 'v*'
+      - '*.*.*'
+  branches:
+    include:
+      - master
 
 jobs:
 
 - job: 'Linux'
   pool:
-    vmImage: 'ubuntu-16.04'
+    vmImage: 'ubuntu-latest'
   strategy:
     matrix:
       Python27:
         python.version: '2.7'
       Python35:
         python.version: '3.5'
-      Python36:
-        python.version: '3.6'
-      Python37:
-        python.version: '3.7'
+      Python38:
+        python.version: '3.8'
 
   steps:
     - template: .ci/azure-steps.yml
@@ -40,7 +44,7 @@ jobs:
 
 - job: 'macOS'
   pool:
-    vmImage: 'macOS-10.13'
+    vmImage: 'macOS-latest'
   strategy:
     matrix:
       Python27:
@@ -50,9 +54,3 @@ jobs:
 
   steps:
     - template: .ci/azure-steps.yml
-
-- job: 'Package'
-  pool:
-    vmImage: 'ubuntu-16.04'
-  steps:
-    - template: .ci/azure-wheel.yml

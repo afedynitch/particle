@@ -3,8 +3,12 @@
     :target: https://github.com/scikit-hep/particle
 
 
-Particle: PDG particle data and identification codes
-====================================================
+``Particle``: PDG particle data and identification codes
+========================================================
+
+.. image:: https://scikit-hep.org/assets/images/Scikit--HEP-Project-blue.svg
+   :alt: Scikit-HEP project package
+   :target: https://scikit-hep.org
 
 .. image:: https://img.shields.io/pypi/v/particle.svg
   :alt: PyPI
@@ -24,6 +28,14 @@ Particle: PDG particle data and identification codes
 .. image:: https://img.shields.io/azure-devops/tests/scikit-hep/particle/1.svg
    :alt: Tests
    :target: https://dev.azure.com/scikit-hep/particle/_build/latest?definitionId=1?branchName=master
+
+.. image:: https://mybinder.org/badge_logo.svg
+   :alt: Binder
+   :target: https://mybinder.org/v2/gh/scikit-hep/particle/master?urlpath=lab/tree/notebooks/ParticleDemo.ipynb
+
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :alt: Code styled with Black
+   :target: https://github.com/psf/black
 
 
 Particle provides a pythonic interface to the `Particle Data Group <http://pdg.lbl.gov/>`_ (PDG)
@@ -60,6 +72,7 @@ Strict dependencies
 - `Python <http://docs.python-guide.org/en/latest/starting/installation/>`_ (2.7+, 3.5+)
 - `importlib_resources backport <http://importlib-resources.readthedocs.io/en/latest/>`_ if using Python < 3.7
 - `attrs <http://www.attrs.org/en/stable/>`_ provides classes without boilerplate (similar to DataClasses in Python 3.7)
+- `hepunits <https://github.com/scikit-hep/hepunits>`_ provides units for the Scikit-HEP packages
 
 
 Changelog
@@ -73,7 +86,7 @@ Getting started: PDGIDs
 
 .. code-block:: python
 
-    >>> from particle.pdgid import PDGID
+    >>> from particle import PDGID
     >>>
     >>> pid = PDGID(211)
     >>> pid
@@ -125,6 +138,11 @@ You can quickly display PDGID info from the command line with:
     has_bottom     False
     ...
 
+
+Similarly, classes exist to express identification codes used by MC programs,
+see information on converters below.
+
+
 Getting started: Particles
 --------------------------
 
@@ -135,20 +153,21 @@ you can get a particle directly, or you can use a search:
 
     >>> from particle import Particle
     >>> Particle.from_pdgid(211)
-    <Particle: name='pi+', pdgid=211, mass=139.57061 ± 0.00024 MeV>
+    <Particle: name="pi+", pdgid=211, mass=139.57061 ± 0.00024 MeV>
     >>>
     >>> Particle.findall('pi')[0]
-    <Particle: name='pi0', pdgid=111, mass=134.9770 ± 0.0005 MeV>
+    <Particle: name="pi0", pdgid=111, mass=134.9770 ± 0.0005 MeV>
 
 You can search for the properties using keyword arguments, which include
 ``pdg_name``, ``name``, ``mass``, ``width``, ``charge``, ``three_charge``, ``anti_flag``, ``rank``,
-``I``, ``J``, ``G``, ``P``, ``quarks``, ``status``, ``latex_name``,
+``I``, ``J``, ``G``, ``P``, ``quarks``, ``status``,
 ``mass_upper``, ``mass_lower``, ``width_upper``, and ``width_lower``.
-You can pass a callable or an exact match for any property.  `particle` can be
-set to ``True``/``False``, as well, to limit the search to particles or
-antiparticles.  You can also build the search yourself with the first positional
-argument, which accepts a callable that is given the particle object itself. If
-the first positional argument is a string, that will match against the
+You can pass a callable or an exact match for any property.
+The argument `particle` can be set to ``True``/``False``, as well,
+to limit the search to particles or antiparticles.
+You can also build the search yourself with the first positional
+argument, which accepts a callable that is given the particle object itself.
+If the first positional argument is a string, that will match against the
 particle's ``name``.  The alternative ``.find()`` *requires only one*
 match returned by the search, and will throw an error if more or less than one
 match is found.
@@ -170,23 +189,23 @@ Here are possible sophisticated searches:
     >>>
     >>> # Find all antiparticles of pdg_name=='Omega'
     >>> Particle.findall(pdg_name='Omega', particle=False)  # only 1, of course
-    [<Particle: name='Omega~+', pdgid=-3334, mass=1672.5 ± 0.3 MeV>]
+    [<Particle: name="Omega~+", pdgid=-3334, mass=1672.5 ± 0.3 MeV>]
     >>>
     >>> # Find all neutral beauty hadrons
     >>> Particle.findall(lambda p: p.pdgid.has_bottom and p.charge==0)
     >>>
     >>> # Find all strange mesons with c*tau > 1 meter
-    >>> from hepunits.units import meter
-    >>> Particle.findall(lambda p: p.pdgid.is_meson and p.pdgid.has_strange and p.width > 0 and p.ctau > 1 * meter, particle=True)
-    [<Particle: name='K(L)0', pdgid=130, mass=497.611 ± 0.013 MeV>,
-     <Particle: name='K+', pdgid=321, mass=493.677 ± 0.016 MeV>]
+    >>> from hepunits import meter
+    >>> Particle.findall(lambda p: p.pdgid.is_meson and p.pdgid.has_strange and p.ctau > 1 * meter, particle=True)
+    [<Particle: name="K(L)0", pdgid=130, mass=497.611 ± 0.013 MeV>,
+     <Particle: name="K+", pdgid=321, mass=493.677 ± 0.016 MeV>]
 
 Once you have a particle, any of the properties can be accessed, along with several methods.
 Though they are not real properties, you can access ``is_name_barred``, and ``spin_type``.
 You can also ``.invert()`` a particle.
 
 There are lots of printing choices for particles:
-``describe()``, ``programmatic_name``, ``html_name``, HTML printing outs in notebooks,
+``describe()``, ``programmatic_name``, ``latex_name``, ``html_name``, HTML printing outs in notebooks,
 and of course ``repr`` and ``str`` support.
 
 You can get the ``.pdgid`` from a particle, as well.
@@ -198,13 +217,13 @@ with easily recognisable names. For example:
 
 .. code-block:: python
 
-    >>> from particle.particle import literals as lp
+    >>> from particle import literals as lp
     >>> lp.pi_plus
-    <Particle: name='pi+', pdgid=211, mass=139.57061 ± 0.00024 MeV>
+    <Particle: name="pi+", pdgid=211, mass=139.57061 ± 0.00024 MeV>
     >>>
-    >>> from particle.particle.literals import Lambda_b_0
+    >>> from particle.literals import Lambda_b_0
     >>> Lambda_b_0
-    <Particle: name='Lambda(b)0', pdgid=5122, mass=5619.60 ± 0.17 MeV>
+    <Particle: name="Lambda(b)0", pdgid=5122, mass=5619.60 ± 0.17 MeV>
     >>> Lambda_b_0.J
     0.5
 
@@ -214,9 +233,9 @@ You can quickly search for particles from the command line with
 .. code-block:: bash
 
     $ python -m particle search "K*0"
-    <Particle: name='K*(892)0', pdgid=313, mass=895.55 ± 0.20 MeV>
-    <Particle: name='K*(1680)0', pdgid=30313, mass=1718 ± 18 MeV>
-    <Particle: name='K*(1410)0', pdgid=100313, mass=1421 ± 9 MeV>
+    <Particle: name="K*(892)0", pdgid=313, mass=895.55 ± 0.20 MeV>
+    <Particle: name="K*(1680)0", pdgid=30313, mass=1718 ± 18 MeV>
+    <Particle: name="K*(1410)0", pdgid=100313, mass=1421 ± 9 MeV>
 
 If you only select one particle, either by a search or by giving the PDGID number, you can see more information about
 the particle:
@@ -232,6 +251,7 @@ the particle:
         SpinType: SpinType.PseudoScalar
         Quarks: dS
         Antiparticle name: K~0 (antiparticle status: Barred)
+
 
 Advanced: Loading custom tables
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -255,3 +275,56 @@ You can convert and update the particle tables with the utilities in ``particle.
 .. code-block:: bash
 
     $ python3 -m particle.particle.convert --help
+
+
+Getting started: Converters
+---------------------------
+
+You can use mapping classes to convert between particle MC identification codes
+and particle names. See the ``particle.converters`` modules for the available
+mapping classes. For example:
+
+.. code-block:: python
+
+    >>> from particle.converters import Pythia2PDGIDBiMap
+    >>> from particle import PDGID, PythiaID
+    >>>
+    >>> pyid = Pythia2PDGIDBiMap[PDGID(9010221)]
+    >>> pyid
+    <PythiaID: 10221>
+
+    >>> pdgid = Pythia2PDGIDBiMap[PythiaID(10221)]
+    >>> pdgid
+    <PDGID: 9010221>
+
+This code makes use of classes similar to ``PDGID``, which hold
+particle identification codes used by MC programs.
+Possible use cases are the following:
+
+.. code-block:: python
+
+    >>> from particle import Particle
+    >>> from particle import Geant3ID, PythiaID
+    >>>
+    >>> g3id = Geant3ID(8)
+    >>> p = Particle.from_pdgid(g3id.to_pdgid())
+    >>>
+    >>> p = Particle.find(pdgid=g3id.to_pdgid())
+    >>> p.name
+    'pi+'
+
+    >>> pythiaid = PythiaID(211)
+    >>> p = Particle.from_pdgid(pythiaid.to_pdgid())
+
+    >>> p = Particle.find(pdgid=pythiaid.to_pdgid())
+    >>> p.name
+    'pi+'
+
+
+Acknowledgements
+----------------
+
+Support for this work was provided by the National Science Foundation
+cooperative agreement OAC-1450377 (DIANA/HEP) and OAC-1836650 (IRIS-HEP).
+Any opinions, findings, conclusions or recommendations expressed in this material
+are those of the authors and do not necessarily reflect the views of the National Science Foundation.
